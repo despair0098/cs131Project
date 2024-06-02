@@ -23,6 +23,14 @@ while(True):
     cudaImg = jetson.utils.cudaFromNumpy(frameRGB)
 
     detections = net.Detect(cudaImg)
+
+    bottle = None
+    for detection in detections:
+        bottle = (net.GetClassDesc(detection.ClassID) == 'bottle')
+        if bottle:
+                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
+                cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
+                cv2.imwrite("test.png", frame)
     
     cv2.imshow('OUTPUT', frame)
 
@@ -30,4 +38,3 @@ while(True):
     
 vidCap.release()
 cv2.destroyAllWindows()
-
