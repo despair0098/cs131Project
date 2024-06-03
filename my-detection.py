@@ -1,7 +1,12 @@
+#from google.cloud import storage
+#from firebase_admin import credentials, db
 import jetson.inference
 import jetson.utils
 import cv2
 import numpy as np
+import time 
+import main, publisher, reciever, file
+import json
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
 
@@ -25,16 +30,24 @@ while(True):
     detections = net.Detect(cudaImg)
 
     bottle = None
+    number = 0
     for detection in detections:
         bottle = (net.GetClassDesc(detection.ClassID) == 'bottle')
         if bottle:
+                number += 1
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
                 cv2.imwrite("test.png", frame)
+                #sending the data
+                #main.addImage("test.png")
+                time.sleep(5)
     
-    cv2.imshow('OUTPUT', frame)
+    if (number == 0):
+        # error/alert
+
+         cv2.imshow('OUTPUT', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'): break
-    
+
 vidCap.release()
 cv2.destroyAllWindows()
