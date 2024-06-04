@@ -5,8 +5,8 @@ import jetson.utils
 import cv2
 import numpy as np
 import time 
-import main
-import json
+#import main
+#import json
 
 net = jetson.inference.detectNet("ssd-mobilenet-v2", threshold=0.5)
 
@@ -31,31 +31,110 @@ while(True):
     detections = net.Detect(cudaImg)
 
     bottle = None
+    apple = None
+    banana = None
     #isDetected = False
-    number = 0
+    numBot = 0
+    numApp = 0
+    numBan = 0
+
+    botFlag = 0
+    appFlag = 0
+    banFlag = 0
+
     for detection in detections:
         bottle = (net.GetClassDesc(detection.ClassID) == 'bottle')
-        if bottle and not isDetected:
-                number += 1
+        #if not isDetected: 
+        if bottle:
+                numBot += 1
                 isDetected = False
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
                 cv2.imwrite("test.png", frame)
-                print('bottle here')
+                if bottle:
+                    botFlag = 1
                 #sending the data
-                main.addImage("test.png")
+                #main.addImage("test.png")
                 #time.sleep(2)
-        else: 
-               isDetected = True
-               if isDetected:
-                   print('bottle not here')
-                   main.add_stock("bottle")
 
-               if bottle:
-                   isDetected = False
+    for detection in detections:
+        apple = (net.GetClassDesc(detection.ClassID) == 'apple')
+        #if not isDetected: 
+        if apple:
+                numBot += 1
+                isDetected = False
+                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
+                cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
+                cv2.imwrite("test.png", frame)
+                if apple:
+                    appFlag = 1
+                #sending the data
+                #main.addImage("test.png")
+                #time.sleep(2)
+
+    for detection in detections:
+        banana = (net.GetClassDesc(detection.ClassID) == 'banana')
+        #if not isDetected: 
+        if banana:
+                numBot += 1
+                isDetected = False
+                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
+                cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
+                cv2.imwrite("test.png", frame)
+                if banana:
+                    banFlag = 1
+                #sending the data
+                #main.addImage("test.png")
+                #time.sleep(2)
+
+    if botFlag == 1:
+        print("bottle here")
+        botFlag = 0
+
+    if appFlag == 1:
+        print("apple here")
+        botFlag = 0
+
+    if banFlag == 1:
+        print("banana here")
+        botFlag = 0
+
     cv2.imshow('OUTPUT', frame)
-
     if cv2.waitKey(1) & 0xFF == ord('q'): break
+
+"""
+        if apple:
+                numApp += 1
+                isDetected = False
+                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
+                cv2.rectangle(frame, (left, top), (right, bottom), (255,0,0), 2)
+                cv2.imwrite("test.png", frame)
+                print('apple here')
+                #sending the data
+                #main.addImage("test.png")
+                #time.sleep(2)
+        if banana:
+                numBan += 1
+                isDetected = False
+                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
+                cv2.rectangle(frame, (left, top), (right, bottom), (255,255,0), 2)
+                cv2.imwrite("test.png", frame)
+                print('banana here')
+		#sending the data
+		#main.addImage("test.png")
+		#time.sleep(2)
+        if not bottle or not apple or not banana:
+               #isDetected = True
+               if not bottle:
+                   print('bottle not here')
+                   #main.add_stock("bottle")
+
+               if not apple:
+                   print('apple not here')
+
+               if not banana:
+                   print('banana not here')
+"""
 
 vidCap.release()
 cv2.destroyAllWindows()
