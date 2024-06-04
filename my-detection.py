@@ -17,6 +17,7 @@ vidCap = cv2.VideoCapture("/dev/video0")
 vidCap.set(3, 640)
 vidCap.set(4, 480)
 isDetected = False
+i = 0
 
 while(True):
     ret, frame = vidCap.read()
@@ -37,10 +38,11 @@ while(True):
     numBot = 0
     numApp = 0
     numBan = 0
-
-    botFlag = 0
-    appFlag = 0
-    banFlag = 0
+    
+    if i == 0:
+        botFlag = 2
+        appFlag = 2
+        banFlag = 2
 
     for detection in detections:
         bottle = (net.GetClassDesc(detection.ClassID) == 'bottle')
@@ -51,8 +53,9 @@ while(True):
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
                 cv2.imwrite("test.png", frame)
-                if bottle:
-                    botFlag = 1
+                if botFlag == 0:
+                    break;
+                botFlag = 1
                 #sending the data
                 #main.addImage("test.png")
                 #time.sleep(2)
@@ -66,11 +69,9 @@ while(True):
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
                 cv2.imwrite("test.png", frame)
-                if apple:
-                    appFlag = 1
-                #sending the data
-                #main.addImage("test.png")
-                #time.sleep(2)
+                if appFlag == 0:
+                    break;
+                appFlag = 1
 
     for detection in detections:
         banana = (net.GetClassDesc(detection.ClassID) == 'banana')
@@ -81,11 +82,9 @@ while(True):
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
                 cv2.imwrite("test.png", frame)
-                if banana:
-                    banFlag = 1
-                #sending the data
-                #main.addImage("test.png")
-                #time.sleep(2)
+                if banFlag == 0:
+                    break;
+                banFlag = 1
 
     if botFlag == 1:
         print("bottle here")
@@ -99,42 +98,9 @@ while(True):
         print("banana here")
         botFlag = 0
 
+    i = i + 1
     cv2.imshow('OUTPUT', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'): break
-
-"""
-        if apple:
-                numApp += 1
-                isDetected = False
-                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
-                cv2.rectangle(frame, (left, top), (right, bottom), (255,0,0), 2)
-                cv2.imwrite("test.png", frame)
-                print('apple here')
-                #sending the data
-                #main.addImage("test.png")
-                #time.sleep(2)
-        if banana:
-                numBan += 1
-                isDetected = False
-                left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
-                cv2.rectangle(frame, (left, top), (right, bottom), (255,255,0), 2)
-                cv2.imwrite("test.png", frame)
-                print('banana here')
-		#sending the data
-		#main.addImage("test.png")
-		#time.sleep(2)
-        if not bottle or not apple or not banana:
-               #isDetected = True
-               if not bottle:
-                   print('bottle not here')
-                   #main.add_stock("bottle")
-
-               if not apple:
-                   print('apple not here')
-
-               if not banana:
-                   print('banana not here')
-"""
 
 vidCap.release()
 cv2.destroyAllWindows()
