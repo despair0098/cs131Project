@@ -53,18 +53,23 @@ while(True):
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
                 cv2.imwrite("test.png", frame)
-                if botFlag == 0:
-                    break;
+                #if botFlag == 0:
+                #    break;
                 botFlag = 1
                 #sending the data
                 #main.addImage("test.png")
                 #time.sleep(2)
+        else: 
+                #print("im in else")
+                #if botFlag == 0:
+                #    break;
+                botFlag = 3
 
     for detection in detections:
         apple = (net.GetClassDesc(detection.ClassID) == 'apple')
         #if not isDetected: 
         if apple:
-                numBot += 1
+                numApp += 1
                 isDetected = False
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
@@ -77,7 +82,7 @@ while(True):
         banana = (net.GetClassDesc(detection.ClassID) == 'banana')
         #if not isDetected: 
         if banana:
-                numBot += 1
+                numBan += 1
                 isDetected = False
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
@@ -87,7 +92,16 @@ while(True):
                 banFlag = 1
 
     if botFlag == 1:
-        print("bottle here")
+        i += 1
+        #print("i is", i)
+        if(i == 1 and numBot > 0):
+           print("bottle here")
+        botFlag = 0
+
+    if botFlag == 3:
+        if(i > 2 and numBot == 0):
+           print("bottle not here")
+           i = 0
         botFlag = 0
 
     if appFlag == 1:
@@ -98,7 +112,7 @@ while(True):
         print("banana here")
         botFlag = 0
 
-    i = i + 1
+    #i = i + 1
     cv2.imshow('OUTPUT', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'): break
 
