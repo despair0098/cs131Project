@@ -3,6 +3,7 @@
 import jetson.inference
 import jetson.utils
 import cv2
+import main
 import numpy as np
 import time 
 #import main
@@ -55,13 +56,13 @@ while(True):
                 numBot += 1
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,0), 2)
-                cv2.imwrite("bottle.png", frame)
+                cv2.imwrite("bottle.jpeg", frame)
                 #if botFlag == 0:
                 #    break;
                 botFlag = 1
                 #sending the data
-                main.addImage("bottle.png")
-                #time.sleep(2)
+                #main.addImage("bottle.jpeg")
+                #time.sleep(10)
         else: 
                 botFlag = 3
 
@@ -71,7 +72,7 @@ while(True):
                 numApp += 1
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (255,255,0), 2)
-                cv2.imwrite("apple.png", frame)
+                cv2.imwrite("apple.jpeg", frame)
                 #if appFlag == 0:
                 #    break;
                 appFlag = 1
@@ -82,8 +83,8 @@ while(True):
                 break;
                 """
                 #sending the data
-                main.addImage("apple.png")
-                #time.sleep(2)
+                #main.addImage("apple.jpeg")
+                #time.sleep(10)
         else: 
                 appFlag = 3
     """
@@ -99,52 +100,60 @@ while(True):
                 numBan += 1
                 left, top, right, bottom = int(detection.Left), int(detection.Top), 			int(detection.Right), int(detection.Bottom)
                 cv2.rectangle(frame, (left, top), (right, bottom), (0,255,255), 2)
-                cv2.imwrite("banana.png", frame)
+                cv2.imwrite("banana.jpeg", frame)
                 if banFlag == 0:
                     break;
                 banFlag = 1
                 #sending the data
-                main.addImage("banana.png")
-                #time.sleep(2)
+                #main.addImage("banana.jpeg")
+                #time.sleep(10)
         else: 
                 banFlag = 3
 
     if botFlag == 1:
         i += 1
         #print("i is", i)
-        if(i == 5):
+        if(i == 5 and numBot > 0):
            print("bottle here")
+           main.send_signal("bottle",1)
+           main.addImage("bottle.jpeg")
         botFlag = 0
 
     if botFlag == 3:
-        if(i > 20):
+        if(i > 20 and numBot == 0):
            print("bottle not here")
+           main.send_signal("bottle", 0)
            i = 0
         botFlag = 0
     
     if appFlag == 1:
         j += 1
-        #print("i is", i)
-        if(j == 5):
+        if(j == 5 and numApp > 0):
            print("apple here")
+           main.send_signal("apple",1)
+           main.addImage("apple.jpeg")
         appFlag = 0
 
     if appFlag == 3:
-        if(j > 20):
+        if(j > 20 and numApp == 0):
            print("apple not here")
+           main.send_signal("apple",0)
            j = 0
         appFlag = 0
     
     if banFlag == 1:
         k += 1
-        #print("i is", i)
-        if(k == 5):
+        #print("k is", k)
+        if(k == 5 and numBan > 0):
            print("banana here")
+       	   main.send_signal("banana",1)
+           main.addImage("banana.jpeg")
         banFlag = 0
 
     if banFlag == 3:
-        if(k > 20):
+        if(k > 20 and numBan == 0):
            print("banana not here")
+           main.send_signal("banana",0)
            k = 0
         banFlag = 0
 
